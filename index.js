@@ -4,8 +4,8 @@ var fs = require('fs'),
     async = require('async'),
     keys = require('./keys'),
     moment = require('moment'),
-    argv = require('yargs').argv;
-
+    argv = require('yargs').argv,
+    archiver = require('archiver');
 
 var tasks = {};
 _.forEach(keys, function (n, key) {
@@ -30,6 +30,21 @@ async.parallel(tasks, function (err, results) {
     else{
         console.log("Results count:" + _.size(results));
     }
-    var path = "data/" + moment().format("YYYY_MM_DD_hh_mm_ss_ZZ") + ".json";
-    fs.writeFileSync(path, JSON.stringify(results, null, 4));
+
+    var jsonData = JSON.stringify(results, null, 4);
+
+    saveToZipFile(jsonData);
 });
+
+function saveToZipFile(jsonData) {
+    var filenameBase = moment().format("YYYY_MM_DD_hh_mm_ss_ZZ");
+
+    var zipFilePath = "data/" + filenameBase + ".zip";
+
+    var archive = archiver('zip');
+    var output = fs.createWriteStream(zipFilePath);
+
+    archive.pipe(output);
+    archive.append(jsonData, {name: filenameBase + ".json"});
+    archive.finalize();
+}
