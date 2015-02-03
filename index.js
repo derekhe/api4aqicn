@@ -11,7 +11,7 @@ var fs = require('fs'),
 var tasks = {};
 _.forEach(keys, function (n, key) {
     tasks[key] = function (callback) {
-        request("http://mapidroid.aqicn.org/aqicn/json/android/" + n, function (err, response, body) {
+        request("http://mapidroid.aqicn.org/aqicn/json/android/" + n + "/v9.json", function (err, response, body) {
             var data = JSON.parse(body);
             if (argv.verbose) {
                 console.log(key, data);
